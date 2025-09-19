@@ -25,10 +25,15 @@ discord:
   # If set to true, Discord user nickname will inherit the nickname based on the linked player account.
   force-nicknames: false
   # List of permissions with their corresponding roles' IDs.
+  # permission groups -> Discord roles
   roles:
 #    admin: "111111111111111111" # If player has a permission group.admin and their account is verified, he will receive the role with ID 111111111111111111.
 #    vip: "222222222222222222"
 #    default: "333333333333333333"
+  # Discord roles -> Luckperms groups
+  groups:
+#    "111111111111111111": "admin"
+#    "222222222222222222": "rank:vip" # prefix rank: here means luckperms track (lp user <user> parent settrack <track(rank)> <group(vip)>
 # All available messages which players and Discord users can see.
 # Available formats:
 # &#{HEX}{MESSAGE} - Text colored in one color.

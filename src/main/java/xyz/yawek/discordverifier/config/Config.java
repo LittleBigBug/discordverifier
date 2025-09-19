@@ -97,6 +97,11 @@ public class Config {
         return (LinkedHashMap<String, String>) configProvider.getMap("discord.roles");
     }
 
+    @SuppressWarnings("unchecked")
+    public LinkedHashMap<String, String> rolesGroups() {
+        return (LinkedHashMap<String, String>) configProvider.getMap("discord.groups");
+    }
+
     // Chat messages
 
     public Component noPermission() {
