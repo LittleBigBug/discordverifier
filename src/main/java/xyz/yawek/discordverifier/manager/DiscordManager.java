@@ -21,6 +21,7 @@ package xyz.yawek.discordverifier.manager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import xyz.yawek.discordverifier.DiscordVerifier;
 import xyz.yawek.discordverifier.config.Config;
@@ -66,9 +67,8 @@ public class DiscordManager {
                     GatewayIntent.DIRECT_MESSAGE_REACTIONS,
                     GatewayIntent.DIRECT_MESSAGE_TYPING,
                     GatewayIntent.DIRECT_MESSAGES,
-                    GatewayIntent.GUILD_BANS,
-                    GatewayIntent.GUILD_EMOJIS,
-                    GatewayIntent.GUILD_EMOJIS,
+                    GatewayIntent.GUILD_MODERATION,
+                    GatewayIntent.GUILD_EXPRESSIONS,
                     GatewayIntent.GUILD_INVITES,
                     GatewayIntent.GUILD_MESSAGE_REACTIONS,
                     GatewayIntent.GUILD_MESSAGE_REACTIONS,
@@ -78,7 +78,7 @@ public class DiscordManager {
                     GatewayIntent.GUILD_VOICE_STATES
             ).build().awaitReady();
             return true;
-        } catch (LoginException | InterruptedException e) {
+        } catch (InterruptedException e) {
             LogUtils.errorDiscord("Unable to connect to the Discord bot. " +
                     "Make sure you set 'discord' settings correctly in the config.yml.");
             e.printStackTrace();
@@ -151,15 +151,13 @@ public class DiscordManager {
         if (guild == null) return Collections.emptyList();
 
         Optional<Role> roleOptional = getRole(roleId);
-        if (roleOptional.isEmpty()) return Collections.emptyList();
-
-        return guild.getMembersWithRoles(roleOptional.get()).stream()
+        return roleOptional.map(role -> guild.getMembersWithRoles(role).stream()
                 .map(member -> {
                     Optional<VerifiableUser> userOptional = verifier
                             .getUserManager().retrieveByMemberId(member.getId());
-                    if (userOptional.isEmpty()) return null;
-                    return userOptional.get();
-                }).filter(Objects::nonNull).collect(Collectors.toList());
+                    return userOptional.orElse(null);
+                }).filter(Objects::nonNull).collect(Collectors.toList())).orElse(Collections.emptyList());
+
     }
     
 }

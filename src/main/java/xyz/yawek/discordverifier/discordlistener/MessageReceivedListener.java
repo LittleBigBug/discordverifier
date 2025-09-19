@@ -21,7 +21,7 @@ package xyz.yawek.discordverifier.discordlistener;
 import com.velocitypowered.api.proxy.Player;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -74,7 +74,7 @@ public class MessageReceivedListener extends ListenerAdapter {
         }
 
         VerifiableUserManager userManager = verifier.getUserManager();
-        TextChannel channel = e.getTextChannel();
+        MessageChannelUnion channel = e.getChannel();
 
         Optional<VerifiableUser> discordUser =
                 userManager.retrieveByMemberId(member.getId());
