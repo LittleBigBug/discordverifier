@@ -28,10 +28,7 @@ import xyz.yawek.discordverifier.config.Config;
 import xyz.yawek.discordverifier.role.GroupRole;
 import xyz.yawek.discordverifier.user.VerifiableUser;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -133,10 +130,10 @@ public class VerificationManager {
         }
     }
 
-    public void removeRoles(Player player) {
+    public void removeRoles(UUID playerUUID) {
         Config config = verifier.getConfig();
 
-        VerifiableUser user = verifier.getUserManager().create(player.getUniqueId());
+        VerifiableUser user = verifier.getUserManager().create(playerUUID);
         if (user.getDiscordId().isEmpty()) return;
 
         Set<GroupRole> roleSet = config.groupsRoles().entrySet()

@@ -29,6 +29,7 @@ import xyz.yawek.discordverifier.user.VerifiableUser;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class UnlinkCommand extends PermissibleCommand {
 
@@ -46,13 +47,15 @@ public class UnlinkCommand extends PermissibleCommand {
         Config config = verifier.getConfig();
         VerifiableUserManager userManager = verifier.getUserManager();
 
+        UUID uuid = ((Player) source).getUniqueId();
+
         VerifiableUser user =
-                userManager.create(((Player) source).getUniqueId());
+                userManager.create(uuid);
         if (user.getDiscordId().isEmpty()) {
             source.sendMessage(config.notVerified());
             return;
         }
-        verifier.getVerificationManager().removeRoles((Player) source);
+        verifier.getVerificationManager().removeRoles(uuid);
         userManager.updateUser(user.toBuilder()
                 .discordId(null)
                 .discordName(null)

@@ -28,10 +28,12 @@ import org.jetbrains.annotations.NotNull;
 import xyz.yawek.discordverifier.DiscordVerifier;
 import xyz.yawek.discordverifier.config.Config;
 import xyz.yawek.discordverifier.manager.DiscordManager;
+import xyz.yawek.discordverifier.manager.VerifiableUserManager;
 import xyz.yawek.discordverifier.manager.VerificationManager;
 import xyz.yawek.discordverifier.user.VerifiableUser;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class MessageReceivedListener extends ListenerAdapter {
@@ -64,41 +66,69 @@ public class MessageReceivedListener extends ListenerAdapter {
             message.delete().queue();
             return;
         }
-        if (!message.getContentRaw().contains("!verify ")) {
-            message.delete().queue();
-            return;
-        }
-        String nickname = message.getContentRaw().replaceFirst("!verify ", "");
-        if (nickname.length() > 40) {
-            message.delete().queue();
-            return;
-        }
-        Optional<VerifiableUser> user =
-                verifier.getUserManager().retrieveByNickname(nickname);
-        Optional<Player> playerOptional = verifier.getServer().getPlayer(nickname);
-        TextChannel channel = e.getTextChannel();
-        if (playerOptional.isEmpty() || user.isEmpty()) {
-            channel.sendMessageEmbeds(config.playerNotFound(nickname)).queue();
-            deleteAfterDelay(message);
-            return;
-        }
-        if (user.get().isVerified()) {
-            channel.sendMessageEmbeds(config.playerAlreadyVerified(nickname)).queue();
-            deleteAfterDelay(message);
-            return;
-        }
+
         Member member = e.getMember();
         if (member == null) {
             message.delete().queue();
             return;
         }
+
+        VerifiableUserManager userManager = verifier.getUserManager();
+        TextChannel channel = e.getTextChannel();
+
         Optional<VerifiableUser> discordUser =
-                verifier.getUserManager().retrieveByMemberId(e.getMember().getId());
+                userManager.retrieveByMemberId(member.getId());
+
+        boolean unlinking = message.getContentRaw().startsWith("!mcunlink");
+
         if (discordUser.isPresent() && discordUser.get().isVerified()) {
-            channel.sendMessageEmbeds(config.discordAlreadyVerified(nickname)).queue();
+            if (unlinking) {
+                UUID uuid = discordUser.get().getUUID();
+                verifier.getVerificationManager().removeRoles(uuid);
+                VerifiableUser user = userManager.create(uuid);
+                userManager.updateUser(user.toBuilder()
+                        .discordId(null)
+                        .discordName(null)
+                        .verified(false)
+                        .build());
+
+                channel.sendMessageEmbeds(config.verificationUnlinked()).queue();
+            } else channel.sendMessageEmbeds(config.discordAlreadyVerified()).queue();
+
+            deleteAfterDelay(message);
+            return;
+        } else if (unlinking) {
+            return;
+        }
+
+        if (!message.getContentRaw().startsWith("!mclink ")) {
+            // todo; send message telling user of wrong usage
+            message.delete().queue();
+            return;
+        }
+
+        String nickname = message.getContentRaw().replaceFirst("!mclink ", "");
+        if (nickname.length() > 40) {
+            message.delete().queue();
+            return;
+        }
+
+        Optional<VerifiableUser> user =
+                userManager.retrieveByNickname(nickname);
+        Optional<Player> playerOptional = verifier.getServer().getPlayer(nickname);
+
+        if (playerOptional.isEmpty() || user.isEmpty()) {
+            channel.sendMessageEmbeds(config.playerNotFound(nickname)).queue();
             deleteAfterDelay(message);
             return;
         }
+
+        if (user.get().isVerified()) {
+            channel.sendMessageEmbeds(config.playerAlreadyVerified(nickname)).queue();
+            deleteAfterDelay(message);
+            return;
+        }
+
         if (verification.startVerification(e.getMember(), playerOptional.get())) {
             channel.sendMessageEmbeds(config.verificationAccepted(nickname)).queue();
             deleteAfterDelay(message);

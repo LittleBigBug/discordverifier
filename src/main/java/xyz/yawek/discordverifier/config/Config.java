@@ -192,14 +192,14 @@ public class Config {
                 .build();
     }
 
-    public MessageEmbed discordAlreadyVerified(String nickname) {
+    public MessageEmbed discordAlreadyVerified() {
         return new EmbedBuilder()
                 .setTitle(configUtils.stringWithArgs(
-                        "messages.discord.discord-already-verified.title", nickname))
+                        "messages.discord.discord-already-verified.title"))
                 .setDescription(configUtils.stringWithArgs(
-                        "messages.discord.discord-already-verified.body", nickname))
+                        "messages.discord.discord-already-verified.body"))
                 .setFooter(configUtils.stringWithArgs(
-                        "messages.discord.discord-already-verified.footer", nickname))
+                        "messages.discord.discord-already-verified.footer"))
                 .build();
     }
 
@@ -233,6 +233,17 @@ public class Config {
                         "messages.discord.verification-success.body"))
                 .setFooter(configProvider.getString(
                         "messages.discord.verification-success.footer"))
+                .build();
+    }
+
+    public MessageEmbed verificationUnlinked() {
+        return new EmbedBuilder()
+                .setTitle(configProvider.getString(
+                        "messages.discord.unlink-success.title"))
+                .setDescription(configProvider.getString(
+                        "messages.discord.unlink-success.body"))
+                .setFooter(configProvider.getString(
+                        "messages.discord.unlink-success.footer"))
                 .build();
     }
 

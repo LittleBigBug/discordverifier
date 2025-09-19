@@ -61,20 +61,20 @@ messages:
     offline-in-message: "offline"
   discord:
     player-not-found:
-      title: "Player with nickname {} cannot be found on the server."
-      body: "You have to be on the server to verify yourself and link your account."
+      title: "Player {} isn't on the server!"
+      body: "Please join the server first to link your account. IP: play.awesomemcserver.com"
       footer: ""
     player-already-verified:
-      title: "Player with nickname {} is verified yet."
-      body: "If you want to undo your verification, use /discord unlink command in-game."
+      title: "Player with username {} is already linked to a discord account."
+      body: "If you want to undo your verification, use !mcunlink or /discord unlink in-game."
       footer: ""
     discord-already-verified:
-      title: "Your Discord account is linked to the verified player yet."
+      title: "Your Discord account is already linked to a minecraft account."
       body: "If you want to undo your verification, use /discord unlink command in-game."
       footer: ""
     verification-accepted:
       title: "Player {} has been found on the server."
-      body: "You have to accept the verification, typing /discord accept in-game."
+      body: "You have to accept the verification, please type /discord accept in-game."
       footer: ""
     verification-denied:
       title: "Verification has been denied."
@@ -84,3 +84,7 @@ messages:
       title: "Verification was successful."
       body: "You are now verifed and your accounts are linked."
       footer: "If you want to unlink your account, type /discord unlink in-game."
+    unlink-success:
+      title: "Your account has been unlinked."
+      body: "Use !mclink <mcusername> to link your account again."
+      footer: ""
