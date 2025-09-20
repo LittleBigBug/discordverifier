@@ -49,37 +49,9 @@ public class LuckPermsManager {
         }
     }
 
-    public void reloadPerms() {
+    public void syncDiscordRoleToLPGroup() {
         Config cfg = verifier.getConfig();
         DiscordManager discord = verifier.getDiscordManager();
-
-        LinkedHashMap<String, String> roleMap = cfg.groupsRoles();
-        roleMap.forEach((groupName, roleId) -> {
-            Optional<Role> roleOptional = discord.getRole(roleId);
-            if (roleOptional.isEmpty()) return;
-
-            discord.getPlayersWithRole(roleId).forEach(user -> {
-                if (user.getDiscordId().isEmpty()) return;
-                Optional<Member> memberOptional =
-                        discord.getMemberById(user.getDiscordId().get());
-                if (memberOptional.isEmpty()) return;
-
-                luckPerms.getUserManager().loadUser(user.getUUID()).thenAccept(lpUser -> {
-                    boolean hasPermission = lpUser.getNodes()
-                            .stream()
-                            .anyMatch(node -> {
-                                if (node.getKey().equals("group." + groupName)) {
-                                    Set<String> values = node.getContexts().getValues("server");
-                                    return values.isEmpty() || values.contains("bungee");
-                                }
-                                return false;
-                            });
-                    if (!hasPermission) {
-                        discord.removeRole(memberOptional.get(), roleOptional.get());
-                    }
-                });
-            });
-        });
 
         LinkedHashMap<String, String> groupMap = cfg.rolesGroups();
         groupMap.forEach((roleId, groupOption) -> {
@@ -147,6 +119,40 @@ public class LuckPermsManager {
                 });
             });
         });
+    }
+
+    public void reloadPerms() {
+//        Config cfg = verifier.getConfig();
+//        DiscordManager discord = verifier.getDiscordManager();
+//
+//        // MC Groups -> Discord Roles
+//        LinkedHashMap<String, String> roleMap = cfg.groupsRoles();
+//        roleMap.forEach((groupName, roleId) -> {
+//            Optional<Role> roleOptional = discord.getRole(roleId);
+//            if (roleOptional.isEmpty()) return;
+//
+//            discord.getPlayersWithRole(roleId).forEach(user -> {
+//                if (user.getDiscordId().isEmpty()) return;
+//                Optional<Member> memberOptional =
+//                        discord.getMemberById(user.getDiscordId().get());
+//                if (memberOptional.isEmpty()) return;
+//
+//                luckPerms.getUserManager().loadUser(user.getUUID()).thenAccept(lpUser -> {
+//                    boolean hasPermission = lpUser.getNodes()
+//                            .stream()
+//                            .anyMatch(node -> {
+//                                if (node.getKey().equals("group." + groupName)) {
+//                                    Set<String> values = node.getContexts().getValues("server");
+//                                    return values.isEmpty() || values.contains("bungee");
+//                                }
+//                                return false;
+//                            });
+//                    if (!hasPermission) {
+//                        discord.removeRole(memberOptional.get(), roleOptional.get());
+//                    }
+//                });
+//            });
+//        });
     }
 
 }

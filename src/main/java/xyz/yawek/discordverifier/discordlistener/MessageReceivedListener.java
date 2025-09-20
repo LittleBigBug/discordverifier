@@ -84,7 +84,9 @@ public class MessageReceivedListener extends ListenerAdapter {
         if (discordUser.isPresent() && discordUser.get().isVerified()) {
             if (unlinking) {
                 UUID uuid = discordUser.get().getUUID();
-                verifier.getVerificationManager().removeRoles(uuid);
+                verifier.getVerificationManager().updateGroups(uuid, true);
+                verifier.getVerificationManager().updateRoles(uuid, true);
+                verifier.getVerificationManager().updatePermissions(uuid, true);
                 VerifiableUser user = userManager.create(uuid);
                 userManager.updateUser(user.toBuilder()
                         .discordId(null)

@@ -44,8 +44,10 @@ public class LoginListener {
                             player.getUniqueId(), player.getUsername());
 
             VerificationManager verificationManager = verifier.getVerificationManager();
+            verificationManager.updateGroups(player);
             verificationManager.updateRoles(player);
-            verificationManager.updateNickname(player);
+            verificationManager.updatePermissions(player);
+            verificationManager.updateNickname(player, true);
 
             VerifiableUser user =
                     verifier.getUserManager().create(player.getUniqueId());

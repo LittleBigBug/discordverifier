@@ -55,7 +55,9 @@ public class UnlinkCommand extends PermissibleCommand {
             source.sendMessage(config.notVerified());
             return;
         }
-        verifier.getVerificationManager().removeRoles(uuid);
+        verifier.getVerificationManager().updateGroups(uuid, true);
+        verifier.getVerificationManager().updateRoles(uuid, true);
+        verifier.getVerificationManager().updatePermissions(uuid, true);
         userManager.updateUser(user.toBuilder()
                 .discordId(null)
                 .discordName(null)

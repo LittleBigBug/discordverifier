@@ -27,6 +27,8 @@ import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import org.slf4j.Logger;
 import xyz.yawek.discordverifier.command.CommandHandler;
 import xyz.yawek.discordverifier.config.Config;
@@ -38,6 +40,7 @@ import xyz.yawek.discordverifier.manager.DiscordManager;
 import xyz.yawek.discordverifier.manager.LuckPermsManager;
 import xyz.yawek.discordverifier.manager.VerifiableUserManager;
 import xyz.yawek.discordverifier.manager.VerificationManager;
+import xyz.yawek.discordverifier.util.LogUtils;
 
 import java.nio.file.Path;
 
@@ -46,9 +49,9 @@ import java.nio.file.Path;
         version = "1.0.8",
         url = "https://yawek.xyz",
         description = "Simple Velocity Discord account linking plugin.",
-        authors = {"yawek9"},
+        authors = {"yawek9", "LittleBigBug"},
         dependencies = {
-            @Dependency(id ="luckperms", optional = true)
+            @Dependency(id = "luckperms")
         }
 )
 public class DiscordVerifier {
@@ -61,6 +64,7 @@ public class DiscordVerifier {
     private final ProxyServer server;
     private final Path dataDirectory;
     private Config config;
+    private LuckPerms luckPerms;
     private ConfigProvider configProvider;
     private DataProvider dataProvider;
     private DiscordManager discordManager;
@@ -77,11 +81,18 @@ public class DiscordVerifier {
     @SuppressWarnings("unused")
     @Subscribe
     public void onInitialize(ProxyInitializeEvent event) {
+        try {
+            this.luckPerms = LuckPermsProvider.get();
+        } catch (IllegalStateException e) {
+            LogUtils.error("LuckPerms not found! LuckPerms is required for this plugin to work. Disabling...");
+            return;
+        }
+
         plugin = this;
 
         this.configProvider = new ConfigProvider(this);
         configProvider.loadConfig();
-        this.config = new Config(configProvider);
+        this.config = new Config(this, configProvider);
 
         this.dataProvider = new DataProvider(this);
         dataProvider.setup();
@@ -133,6 +144,10 @@ public class DiscordVerifier {
 
     public Config getConfig() {
         return config;
+    }
+
+    public LuckPerms getLuckPerms() {
+        return luckPerms;
     }
 
     public DataProvider getDataProvider() {

@@ -20,18 +20,24 @@ package xyz.yawek.discordverifier.config;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Role;
 import net.kyori.adventure.text.Component;
+import xyz.yawek.discordverifier.DiscordVerifier;
+import xyz.yawek.discordverifier.role.GroupRole;
+import xyz.yawek.discordverifier.role.RoleGroup;
 
-import java.util.LinkedHashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Config {
 
+    private final DiscordVerifier verifier;
     private final ConfigProvider configProvider;
     private final ConfigUtils configUtils;
 
-    public Config(ConfigProvider configProvider) {
+    public Config(DiscordVerifier verifier, ConfigProvider configProvider) {
+        this.verifier = verifier;
         this.configProvider = configProvider;
-
         this.configUtils = new ConfigUtils(configProvider);
     }
 
@@ -88,18 +94,59 @@ public class Config {
         return configProvider.getBoolean("discord.one-role-limit");
     }
 
+    public boolean nicknameSyncEnabled() {
+        return configProvider.getBoolean("discord.sync.nickname.enable");
+    }
+
     public boolean forceNicknames() {
-        return configProvider.getBoolean("discord.force-nicknames");
+        return configProvider.getBoolean("discord.sync.nickname.force");
+    }
+
+    public boolean nicknameSyncDiscordToMinecraft() {
+        return configProvider.getBoolean("discord.sync.nickname.discord-to-minecraft");
     }
 
     @SuppressWarnings("unchecked")
     public LinkedHashMap<String, String> groupsRoles() {
-        return (LinkedHashMap<String, String>) configProvider.getMap("discord.roles");
+        return (LinkedHashMap<String, String>) configProvider.getMap("discord.sync.group.roles");
     }
 
     @SuppressWarnings("unchecked")
     public LinkedHashMap<String, String> rolesGroups() {
-        return (LinkedHashMap<String, String>) configProvider.getMap("discord.groups");
+        return (LinkedHashMap<String, String>) configProvider.getMap("discord.sync.group.groups");
+    }
+
+    @SuppressWarnings("unchecked")
+    public LinkedHashMap<String, String> trackDefaultGroupsMap() {
+        return (LinkedHashMap<String, String>) configProvider.getMap("discord.sync.group.track-default-groups");
+    }
+
+    public String trackDefaultGroup(String trackName) {
+        return trackDefaultGroupsMap().getOrDefault(trackName, null);
+    }
+
+    public Set<GroupRole> groupsRolesSet() {
+        return this.groupsRoles().entrySet()
+                .stream().map(entry -> {
+                    Optional<Role> roleOptional =
+                            this.verifier.getDiscordManager().getRole(entry.getValue());
+                    return roleOptional.map(role -> new GroupRole(entry.getKey(), role)).orElse(null);
+                }).filter(Objects::nonNull)
+                .collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    public Set<RoleGroup> rolesGroupsSet() {
+        return this.rolesGroups().entrySet()
+                .stream().map(entry -> {
+                    Optional<Role> roleOptional =
+                            this.verifier.getDiscordManager().getRole(entry.getKey());
+                    return roleOptional.map(role -> new RoleGroup(entry.getValue(), role)).orElse(null);
+                }).filter(Objects::nonNull)
+                .collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    public List<String> verificationPermissions() {
+        return configProvider.getStringList("discord.sync.group.verification-permissions");
     }
 
     // Chat messages

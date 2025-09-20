@@ -22,18 +22,34 @@ discord:
   verification-expire-time: 120
   # If set to true, only highest placed role (defined by player's permissions) will be assigned.
   one-role-limit: true
-  # If set to true, Discord user nickname will inherit the nickname based on the linked player account.
-  force-nicknames: false
-  # List of permissions with their corresponding roles' IDs.
-  # permission groups -> Discord roles
-  roles:
-#    admin: "111111111111111111" # If player has a permission group.admin and their account is verified, he will receive the role with ID 111111111111111111.
-#    vip: "222222222222222222"
-#    default: "333333333333333333"
-  # Discord roles -> Luckperms groups
-  groups:
-#    "111111111111111111": "admin"
-#    "222222222222222222": "rank:vip" # prefix rank: here means luckperms track (lp user <user> parent settrack <track(rank)> <group(vip)>
+  sync:
+    nickname:
+      enable: false
+      # If set to true, the nickname will be set on every player login
+      # If false, the nickname will only be set when the player first verifies
+      force: false
+      # If true, set Minecraft name to Discord nickname.
+      # If false, set Discord nickname to Minecraft name.
+      discord-to-minecraft: true
+      # If set to true, Discord user nickname will inherit the nickname based on the linked player account.
+    group:
+      # List of permissions with their corresponding roles' IDs.
+      # permission groups -> Discord roles
+      roles:
+    #    admin: "111111111111111111" # If player has a permission group.admin and their account is verified, he will receive the role with ID 111111111111111111.
+    #    vip: "222222222222222222"
+    #    default: "333333333333333333"
+      # Discord roles -> Luckperms groups
+      groups:
+    #    "111111111111111111": "admin"
+    #    "222222222222222222": "rank:vip" # prefix rank: here means luckperms track (lp user <user> parent settrack <track(rank)> <group(vip)>
+      # If a user's group is removed and is in a track, what group should be assigned to the user?
+      track-default-groups:
+    #    "trackName": "defaultGroup"
+      # give these permissions when linked (also removes them when unlinked)
+      verification-permissions:
+        - "discordverifier.linked"
+    #    - "group.discordlinked"
 # All available messages which players and Discord users can see.
 # Available formats:
 # &#{HEX}{MESSAGE} - Text colored in one color.
