@@ -67,6 +67,7 @@ public class DiscordManager {
                     GatewayIntent.DIRECT_MESSAGE_REACTIONS,
                     GatewayIntent.DIRECT_MESSAGE_TYPING,
                     GatewayIntent.DIRECT_MESSAGES,
+                    GatewayIntent.MESSAGE_CONTENT,
                     GatewayIntent.GUILD_MODERATION,
                     GatewayIntent.GUILD_EXPRESSIONS,
                     GatewayIntent.GUILD_INVITES,

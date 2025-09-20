@@ -126,7 +126,9 @@ public class Config {
     }
 
     public Set<GroupRole> groupsRolesSet() {
-        return this.groupsRoles().entrySet()
+        LinkedHashMap<String, String> groupsRoles = this.groupsRoles();
+        if (groupsRoles == null) return Collections.emptySet();
+        return groupsRoles.entrySet()
                 .stream().map(entry -> {
                     Optional<Role> roleOptional =
                             this.verifier.getDiscordManager().getRole(entry.getValue());
@@ -136,7 +138,9 @@ public class Config {
     }
 
     public Set<RoleGroup> rolesGroupsSet() {
-        return this.rolesGroups().entrySet()
+        LinkedHashMap<String, String> rolesGroups = this.rolesGroups();
+        if (rolesGroups == null) return Collections.emptySet();
+        return rolesGroups.entrySet()
                 .stream().map(entry -> {
                     Optional<Role> roleOptional =
                             this.verifier.getDiscordManager().getRole(entry.getKey());

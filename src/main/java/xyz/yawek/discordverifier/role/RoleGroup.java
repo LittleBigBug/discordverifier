@@ -24,7 +24,7 @@ import net.luckperms.api.track.Track;
 import net.luckperms.api.track.TrackManager;
 import org.jetbrains.annotations.NotNull;
 
-public class RoleGroup implements Comparable<GroupRole> {
+public class RoleGroup implements Comparable<RoleGroup> {
 
     private final String trackName;
     private final String groupName;
@@ -62,7 +62,7 @@ public class RoleGroup implements Comparable<GroupRole> {
     }
 
     @Override
-    public int compareTo(@NotNull GroupRole r) {
+    public int compareTo(@NotNull RoleGroup r) {
         return Integer.compare(r.getRole().getPosition(), this.getRole().getPosition());
     }
 

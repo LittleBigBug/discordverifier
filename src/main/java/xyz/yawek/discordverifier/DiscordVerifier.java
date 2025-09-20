@@ -44,15 +44,16 @@ import xyz.yawek.discordverifier.util.LogUtils;
 
 import java.nio.file.Path;
 
-@Plugin(id = "discordverifier",
-        name = "DiscordVerifier",
-        version = "1.0.8",
-        url = "https://yawek.xyz",
-        description = "Simple Velocity Discord account linking plugin.",
-        authors = {"yawek9", "LittleBigBug"},
-        dependencies = {
-            @Dependency(id = "luckperms")
-        }
+@Plugin(
+    id = "discordverifier",
+    name = "DiscordVerifier",
+    version = "1.0.8",
+    url = "https://yawek.xyz",
+    description = "Simple Velocity Discord account linking plugin.",
+    authors = {"yawek9", "LittleBigBug"},
+    dependencies = {
+        @Dependency(id = "luckperms")
+    }
 )
 public class DiscordVerifier {
 

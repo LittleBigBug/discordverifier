@@ -219,17 +219,21 @@ public class VerificationManager {
         List<String> perms = config.verificationPermissions();
 
         UserManager userManager = this.verifier.getLuckPerms().getUserManager();
+        VerifiableUser user = verifier.getUserManager().create(uuid);
+
+        boolean verified = user.isVerified();
+        boolean shouldRemove = remove || !verified;
 
         userManager.loadUser(uuid).thenAccept(lpUser -> {
             boolean modified = false;
 
             for (String perm : perms) {
                 boolean hasPerm = this.hasPermission(lpUser, perm);
-                if (remove != hasPerm) continue;
+                if (shouldRemove != hasPerm) continue;
 
                 modified = true;
 
-                if (remove) lpUser.data().remove(Node.builder(perm).build());
+                if (shouldRemove) lpUser.data().remove(Node.builder(perm).build());
                 else lpUser.data().add(Node.builder(perm).build());
             }
 

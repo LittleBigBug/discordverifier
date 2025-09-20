@@ -26,7 +26,7 @@ public class LogUtils {
     private static final Logger LOGGER = DiscordVerifier.getVerifier().getLogger();
 
     public static void info(String text, String... arguments) {
-        LOGGER.info(text, arguments);
+        LOGGER.info(text, (Object[]) arguments);
     }
 
     public static void error(String text, String... arguments) {
