@@ -90,6 +90,14 @@ public class Config {
         return configProvider.getInt("discord.verification-expire-time");
     }
 
+    public boolean kickOnUnlink() {
+        return configProvider.getBoolean("discord.kick-on-unlink");
+    }
+
+    public String sendToServerOnUnlink() {
+        return configProvider.getString("discord.send-to-server-on-unlink");
+    }
+
     public boolean oneRoleLimit() {
         return configProvider.getBoolean("discord.one-role-limit");
     }
@@ -157,6 +165,20 @@ public class Config {
         return configProvider.getStringList("discord.banned-roles");
     }
 
+    // Kick messages
+
+    public Component unlinkKicked() {
+        return configUtils.noPrefixMessage("messages.kick.unlink");
+    }
+
+    public Component discordBanned() {
+        return configUtils.noPrefixMessage("messages.kick.discord-banned");
+    }
+
+    public Component discordBannedJoin() {
+        return configUtils.noPrefixMessage("messages.kick.discord-banned-join");
+    }
+
     // Chat messages
 
     public Component noPermission() {
@@ -190,14 +212,6 @@ public class Config {
 
     public Component discordInfo() {
         return configUtils.prefixedMessage("messages.chat.discord-info");
-    }
-
-    public Component discordBanned() {
-        return configUtils.noPrefixMessage("messages.chat.discord-banned");
-    }
-
-    public Component discordBannedJoin() {
-        return configUtils.noPrefixMessage("messages.chat.discord-banned-join");
     }
 
     public Component verificationRequest(String discordName) {

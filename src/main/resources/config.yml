@@ -20,6 +20,11 @@ discord:
   delete-message-after: 20
   # Delay in seconds after which verification request will expire.
   verification-expire-time: 120
+  # If true, when a player unlinks and they are still on the server, kick them from the proxy
+  kick-on-unlink: false
+  # If anything else but '', when a player unlinks and they are still on the server, send them to this server.
+  # If the plugin can't find the server specified, it will kick the player if kick-on-unlink is true.
+  send-to-server-on-unlink: ''
   # If set to true, only highest placed role (defined by player's permissions) will be assigned.
   one-role-limit: true
   # If a user has any of these roles, then they will be prevented from joining the server and unlinking accounts.
@@ -58,6 +63,10 @@ discord:
 # &#{HEX}{MESSAGE} - Text colored in one color.
 # &#gr{HEX1}{HEX2}{MESSAGE} - Text colored with a gradient of two colors.
 messages:
+  kick:
+    unlink: "You've been kicked from the server for unlinking your discord account. Link again to join back!"
+    discord-banned: "You have been banned on our discord server!"
+    discord-banned-join: "You are unable to join because you have been banned on our discord server!"
   chat:
     prefix: "&#FF5555&lDiscordVerifier &#AA0000» &#FF5555"
     no-permission: "You don't have permission to execute this command."
@@ -72,8 +81,6 @@ messages:
       - "&#FF5555Discord Name: &#FFFFFF{}"
       - "&#FF5555Online: &#FFFFFF{}"
     discord-info: "Join our Discord server and get verified right now, if you haven't already: &#FFFFFFdiscord.gg/someserver&#FF5555."
-    discord-banned: "You have been banned on our discord server!"
-    discord-banned-join: "You are unable to join because you have been banned on our discord server!"
     verification-request: "You received verification request from Discord account &#FFFFFF{}&#FF5555. To accept verification, type &#FFFFFF/discord accept&#FF5555, to deny it, type &#FFFFFF/discord deny&#FF5555."
     verification-expired: "Verification request from Discord account &#FFFFFF{} &#FF5555expired."
     verification-denied: "You denied verification request."

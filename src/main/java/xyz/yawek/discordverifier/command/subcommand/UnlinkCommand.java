@@ -20,15 +20,18 @@ package xyz.yawek.discordverifier.command.subcommand;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ProxyServer;
 import org.jetbrains.annotations.NotNull;
 import xyz.yawek.discordverifier.DiscordVerifier;
 import xyz.yawek.discordverifier.command.PermissibleCommand;
 import xyz.yawek.discordverifier.config.Config;
 import xyz.yawek.discordverifier.manager.VerifiableUserManager;
 import xyz.yawek.discordverifier.user.VerifiableUser;
+import xyz.yawek.discordverifier.util.LogUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class UnlinkCommand extends PermissibleCommand {
@@ -64,6 +67,29 @@ public class UnlinkCommand extends PermissibleCommand {
                 .verified(false)
                 .build());
         source.sendMessage(config.verificationCanceled());
+
+        boolean kickUnlink = config.kickOnUnlink();
+
+        String sendServer = config.sendToServerOnUnlink();
+        boolean sendToServer = !sendServer.isBlank();
+
+        if (sendToServer || kickUnlink) {
+            ProxyServer proxy = verifier.getServer();
+            Optional<Player> optPly = proxy.getPlayer(uuid);
+
+            if (optPly.isPresent()) {
+                Player ply = optPly.get();
+
+                if (sendToServer) {
+                    var optServer = proxy.getServer(sendServer);
+                    if (optServer.isPresent()) ply.createConnectionRequest(optServer.get()).connect();
+                    else {
+                        LogUtils.error("No server found by the name " + sendServer);
+                        if (kickUnlink) ply.disconnect(config.unlinkKicked());
+                    }
+                } else ply.disconnect(config.unlinkKicked());
+            }
+        }
     }
 
     @Override

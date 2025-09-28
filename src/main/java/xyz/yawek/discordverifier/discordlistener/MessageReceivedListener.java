@@ -19,6 +19,7 @@
 package xyz.yawek.discordverifier.discordlistener;
 
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ProxyServer;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
@@ -31,6 +32,7 @@ import xyz.yawek.discordverifier.manager.DiscordManager;
 import xyz.yawek.discordverifier.manager.VerifiableUserManager;
 import xyz.yawek.discordverifier.manager.VerificationManager;
 import xyz.yawek.discordverifier.user.VerifiableUser;
+import xyz.yawek.discordverifier.util.LogUtils;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -83,6 +85,7 @@ public class MessageReceivedListener extends ListenerAdapter {
 
         if (discordUser.isPresent() && discordUser.get().isVerified()) {
             if (unlinking) {
+                // todo; pls combine this and discord unlink in game command
                 UUID uuid = discordUser.get().getUUID();
                 verifier.getVerificationManager().updateGroups(uuid, true);
                 verifier.getVerificationManager().updateRoles(uuid, true);
@@ -93,6 +96,29 @@ public class MessageReceivedListener extends ListenerAdapter {
                         .discordName(null)
                         .verified(false)
                         .build());
+
+                boolean kickUnlink = config.kickOnUnlink();
+
+                String sendServer = config.sendToServerOnUnlink();
+                boolean sendToServer = !sendServer.isBlank();
+
+                if (sendToServer || kickUnlink) {
+                    ProxyServer proxy = verifier.getServer();
+                    Optional<Player> optPly = proxy.getPlayer(uuid);
+
+                    if (optPly.isPresent()) {
+                        Player ply = optPly.get();
+
+                        if (sendToServer) {
+                            var optServer = proxy.getServer(sendServer);
+                            if (optServer.isPresent()) ply.createConnectionRequest(optServer.get()).connect();
+                            else {
+                                LogUtils.error("No server found by the name " + sendServer);
+                                if (kickUnlink) ply.disconnect(config.unlinkKicked());
+                            }
+                        } else ply.disconnect(config.unlinkKicked());
+                    }
+                }
 
                 channel.sendMessageEmbeds(config.verificationUnlinked()).queue();
             } else channel.sendMessageEmbeds(config.discordAlreadyVerified()).queue();
