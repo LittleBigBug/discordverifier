@@ -21,10 +21,17 @@ package xyz.yawek.discordverifier.listener;
 import com.velocitypowered.api.event.EventTask;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.LoginEvent;
+import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.proxy.Player;
+import net.dv8tion.jda.api.entities.Member;
 import xyz.yawek.discordverifier.DiscordVerifier;
+import xyz.yawek.discordverifier.config.Config;
+import xyz.yawek.discordverifier.manager.DiscordManager;
 import xyz.yawek.discordverifier.manager.VerificationManager;
 import xyz.yawek.discordverifier.user.VerifiableUser;
+
+import java.util.List;
+import java.util.Optional;
 
 public class LoginListener {
 
@@ -34,7 +41,17 @@ public class LoginListener {
         this.verifier = verifier;
     }
 
-    @SuppressWarnings("unused")
+    @Subscribe
+    public EventTask onPlayerPostLogin(PostLoginEvent e) {
+        return EventTask.async(() -> {
+            Player player = e.getPlayer();
+            VerifiableUser user =
+                    verifier.getUserManager().create(player.getUniqueId());
+            if (!user.isVerified())
+                player.sendMessage(verifier.getConfig().notVerifiedYet());
+        });
+    }
+
     @Subscribe
     public EventTask onPlayerLogin(LoginEvent e) {
         return EventTask.async(() -> {
@@ -51,8 +68,26 @@ public class LoginListener {
 
             VerifiableUser user =
                     verifier.getUserManager().create(player.getUniqueId());
-            if (!user.isVerified())
-                player.sendMessage(verifier.getConfig().notVerifiedYet());
+
+            if (user.isVerified()) {
+                Config config = verifier.getConfig();
+
+                List<String> bannedRoles = config.bannedDiscordRoles();
+                if (bannedRoles.isEmpty()) return;
+
+                DiscordManager discordManager = verifier.getDiscordManager();
+
+                Optional<String> optId = user.getDiscordId();
+                if (optId.isEmpty()) return;
+
+                Optional<Member> optMember = discordManager.getMemberById(optId.get());
+                if (optMember.isEmpty()) return;
+
+                boolean hasBannedRole = optMember.get().getRoles().stream()
+                        .anyMatch(role -> bannedRoles.contains(role.getId()));
+
+                if (hasBannedRole) player.disconnect(config.discordBannedJoin());
+            }
         });
     }
 

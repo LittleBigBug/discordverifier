@@ -22,6 +22,9 @@ discord:
   verification-expire-time: 120
   # If set to true, only highest placed role (defined by player's permissions) will be assigned.
   one-role-limit: true
+  # If a user has any of these roles, then they will be prevented from joining the server and unlinking accounts.
+  banned-roles:
+  #  - 111111111111111111
   sync:
     nickname:
       enable: false
@@ -69,6 +72,8 @@ messages:
       - "&#FF5555Discord Name: &#FFFFFF{}"
       - "&#FF5555Online: &#FFFFFF{}"
     discord-info: "Join our Discord server and get verified right now, if you haven't already: &#FFFFFFdiscord.gg/someserver&#FF5555."
+    discord-banned: "You have been banned on our discord server!"
+    discord-banned-join: "You are unable to join because you have been banned on our discord server!"
     verification-request: "You received verification request from Discord account &#FFFFFF{}&#FF5555. To accept verification, type &#FFFFFF/discord accept&#FF5555, to deny it, type &#FFFFFF/discord deny&#FF5555."
     verification-expired: "Verification request from Discord account &#FFFFFF{} &#FF5555expired."
     verification-denied: "You denied verification request."

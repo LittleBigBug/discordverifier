@@ -153,6 +153,10 @@ public class Config {
         return configProvider.getStringList("discord.sync.group.verification-permissions");
     }
 
+    public List<String> bannedDiscordRoles() {
+        return configProvider.getStringList("discord.banned-roles");
+    }
+
     // Chat messages
 
     public Component noPermission() {
@@ -186,6 +190,14 @@ public class Config {
 
     public Component discordInfo() {
         return configUtils.prefixedMessage("messages.chat.discord-info");
+    }
+
+    public Component discordBanned() {
+        return configUtils.noPrefixMessage("messages.chat.discord-banned");
+    }
+
+    public Component discordBannedJoin() {
+        return configUtils.noPrefixMessage("messages.chat.discord-banned-join");
     }
 
     public Component verificationRequest(String discordName) {
